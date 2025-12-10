@@ -219,6 +219,11 @@
     const MEETING_HOUR = 12; 
     const MEETING_MINUTE = 30;
 
+    // VARIABILE AGGIUNTA: Forza la modalità del meeting per eccezioni manuali o test.
+    // Impostata a 'REMOTE' come richiesto dall'utente.
+    // Valori possibili: 'REMOTE', 'IN_PERSON', o null (per usare la logica Pari/Dispari)
+    const FORCE_MEETING_MODE = 'REMOTE'; 
+
     const IN_PERSON_LINK = "https://maps.app.goo.gl/random-alba-location-for-test";
     const REMOTE_LINK = "https://zoom.us/tbd-alba-cubesat-sm"; 
 
@@ -342,6 +347,19 @@
     }
 
     function getMeetingMode(date) {
+        // 1. Controlla l'override manuale
+        if (FORCE_MEETING_MODE) {
+            const mode = FORCE_MEETING_MODE;
+            const langData = LANGUAGES[currentLanguage];
+            return {
+                mode: mode,
+                link: mode === 'IN_PERSON' ? IN_PERSON_LINK : REMOTE_LINK,
+                label: mode === 'IN_PERSON' ? langData.in_person_label : langData.remote_label,
+                week: 'N/A (Forced)',
+            };
+        }
+
+        // 2. Logica Standard (se FORCE_MEETING_MODE è null)
         const t = new Date(date.valueOf());
         const dayn = (date.getDay() + 6) % 7;
         t.setDate(t.getDate() - dayn + 3);

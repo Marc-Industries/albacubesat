@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alba CubeSat Meeting Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-blue: #1f4287; 
+            --secondary-red: #8f0d2c;
+            --background-dark: #1b2641; 
+        }
+        
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;    
+            min-height: 100vh; 
+            background-color: var(--background-dark); 
+            color: #d1d5db; 
+            transition: background-color 0.5s ease;
+            padding: 20px;
+        }
+        .container {
+            max-width: 450px;
+            padding: 40px;
+            background: white; 
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4); 
+            text-align: center;
+            position: relative;
+            width: 90%; 
+            animation: fadeInScale 0.6s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container h1, .container h3 {
+            color: var(--primary-blue);
+        }
+        .container p {
+            color: #6b7280;
+        }
+
+        .dynamic-btn-base {
+            transition: all 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-weight: 800; 
+        }
+
+        .is-in-person-border {
+            box-shadow: 0 0 0 3px #34D399, 
+                        0 8px 15px rgba(16, 185, 129, 0.3); 
+        }
+
+        .in-person-btn { 
+            background-color: #10b981; 
+        }
+        .in-person-btn:hover { 
+            background-color: #059669; 
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.7); 
+        }
+
+        .remote-btn { 
+            background-color: #3b82f6; 
+        }
+        .remote-btn:hover { 
+            background-color: #2563eb; 
+            box-shadow: 0 4px 18px rgba(59, 130, 246, 0.7);
+        }
+        
+        .toggler-btn {
+            background-color: #f3f4f6; 
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            font-weight: 900; 
+        }
+        .toggler-btn:hover {
+             background-color: #e5e7eb;
+             transform: scale(1.02);
+             box-shadow: 0 4px 12px rgba(31, 66, 135, 0.3);
+        }
+
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px; 
+            font-weight: 700;
+            font-size: 0.875rem; 
+            line-height: 1.25rem;
+            margin-bottom: 8px; 
+        }
+        .mode-badge-in-person {
+            background-color: #d1fae5; 
+            color: #065f46; 
+        }
+        .mode-badge-remote {
+            background-color: #dbeafe; 
+            color: #1e40af; 
+        }
+
+
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #language-selector-menu {
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 20;
+            padding: 5px 0;
+            display: none;
+            min-width: 150px;
+        }
+        .lang-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.1s;
+            font-size: 14px;
+            color: #1f2937;
+        }
+        .lang-option:hover {
+            background-color: #e5e7eb;
+        }
+        .lang-option span {
+            margin-right: 8px;
+            font-size: 18px; 
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="language-toggle-button" 
+     class="fixed top-4 left-4 p-3 rounded-full bg-white shadow-xl cursor-pointer transition duration-150 ease-in-out hover:shadow-2xl"
+     title="Change Language">
+    <span id="current-flag" role="img" aria-label="Current Language Flag">🇮🇹</span> 
+</div>
+
+<div id="language-selector-menu">
+</div>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="https://i.ibb.co/7Jj33H2x/1722942232962.jpg" 
+             alt="Alba CubeSat Logo" 
+             class="w-24 h-24 mb-4 rounded-full p-2 border-4 border-gray-100 shadow-2xl bg-white object-cover">
+        
+        <h1 class="text-3xl font-black mb-1" id="main-title">Alba CubeSat</h1>
+        <p class="text-sm font-medium text-gray-500 mb-6" id="subtitle">Strutture & Meccanismi Subsystem</p>
+    </div>
+
+    <div id="status-icon" class="loading-icon my-4">
+        <svg class="animate-spin h-8 w-8 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    </div>
+
+    <h3 id="status-message" class="text-4xl font-extrabold text-gray-800 mb-2">Checking meeting status...</h3>
+    
+    <div id="time-details" class="text-md text-gray-600 mb-6 font-semibold">Loading schedule...</div>
+    
+    <div id="button-wrapper" class="w-full">
+        <button id="dynamic-button" 
+           class="dynamic-btn-base w-full text-white font-extrabold py-3 px-6 rounded-xl transition duration-300 shadow-xl transform hover:scale-[1.03] text-lg info-btn" 
+           type="button">
+            JOIN MEETING
+        </button>
+
+        <div id="upcoming-details" 
+             class="mt-4 p-4 rounded-xl border-2 border-gray-100 text-left transition-all duration-300 ease-in-out hidden bg-gray-50 shadow-inner flex flex-col items-center">
+            
+            <p id="details-text" class="text-sm text-gray-700 mb-3 font-medium w-full"></p>
+            
+            <a id="details-link-button" 
+               target="_blank"
+               class="dynamic-btn-base flex items-center self-center text-sm text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md transform hover:scale-[1.05]" 
+               href="#">
+                <svg id="details-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                OTTIENI INDICAZIONI / VAI AL LINK
+            </a>
+        </div>
+    </div>
+
+    <p class="text-xs text-gray-400 mt-5 italic" id="timezone-info">
+        Orario di riferimento: Giovedì 12:30 (Ora Locale)
+    </p>
+</div>
+
+<script>
+    const MEETING_DAY = 4; 
+    const MEETING_HOUR = 12; 
+    const MEETING_MINUTE = 30;
+
+    const IN_PERSON_LINK = "https://maps.app.goo.gl/random-alba-location-for-test";
+    const REMOTE_LINK = "https://zoom.us/tbd-alba-cubesat-sm"; 
+
+    const LANGUAGES = {
+        'it': {
+            flag: '🇮🇹', name: 'Italiano', 
+            title: 'Alba CubeSat Meeting',
+            subtitle: 'Strutture & Meccanismi Subsystem',
+            live: 'RIUNIONE LIVE ORA!',
+            upcoming: 'Prossima Riunione In Arrivo', 
+            none: 'Nessuna Riunione Attiva',
+            details_live_in_person: 'Modalità: IN PRESENZA (In Corso)',
+            details_live_remote: 'Modalità: REMOTO (Zoom - In Corso)',
+            button_in_person: 'APRI MAPS / VAI ALLA POSIZIONE',
+            button_remote: 'ACCEDI ALLA CALL ZOOM',
+            button_info: 'Vedi Dettagli Riunione',
+            
+            upcoming_button_in_person: 'PROSSIMO MEET IN PRESENZA',
+            upcoming_button_remote: 'PROSSIMO MEET A DISTANZA',
+            details_upcoming_in_person_text: 'La prossima call si terrà **IN PRESENZA** (settimana pari). Clicca il pulsante qui sotto per visualizzare le indicazioni su Maps:',
+            details_upcoming_remote_text: 'La prossima call si terrà **A DISTANZA** su Zoom (settimana dispari). Clicca il pulsante qui sotto per accedere alla call:',
+            details_link_button: 'OTTIENI INDICAZIONI MAPS',
+            details_link_button_remote: 'ACCEDI ALLA CALL ZOOM',
+            
+            timezone_info: 'Orario di riferimento: Giovedì 12:30 (Ora Locale)',
+            in_person_label: 'In Presenza', 
+            remote_label: 'A Distanza',    
+        },
+        'en': {
+            flag: '🇬🇧', name: 'English', 
+            title: 'Alba CubeSat Meeting',
+            subtitle: 'Structures & Mechanisms Subsystem',
+            live: 'MEETING LIVE NOW!',
+            upcoming: 'Upcoming Meeting Soon',
+            none: 'No Active Meetings',
+            details_live_in_person: 'Mode: IN PERSON (In Progress)',
+            details_live_remote: 'Mode: REMOTE (Zoom - In Progress)',
+            button_in_person: 'OPEN MAPS / GO TO LOCATION',
+            button_remote: 'JOIN ZOOM CALL',
+            button_info: 'View Meeting Details',
+            
+            upcoming_button_in_person: 'NEXT IN-PERSON MEETUP',
+            upcoming_button_remote: 'NEXT REMOTE MEETING',
+            details_upcoming_in_person_text: 'The next meeting (even week) will be **IN PERSON**. Click the button below for directions on Maps:',
+            details_upcoming_remote_text: 'The next meeting (odd week) will be **REMOTE** on Zoom. Click the button below to join the call:',
+            details_link_button: 'GET MAPS DIRECTIONS',
+            details_link_button_remote: 'JOIN ZOOM CALL',
+            
+            timezone_info: 'Reference Time: Thursday 12:30 PM (Local Time)',
+            in_person_label: 'In Person',
+            remote_label: 'Remote',
+        },
+        'zh': { 
+            flag: '🇨🇳', name: '中文 (Chinese)', 
+            title: 'Alba CubeSat 会议',
+            subtitle: '结构与机械子系统',
+            live: '会议正在进行中！',
+            upcoming: '即将召开会议',
+            none: '未安排会议',
+            details_live_in_person: '模式: 现场 (进行中)',
+            details_live_remote: '模式: 远程 (Zoom - 进行中)',
+            button_in_person: '打开地图 / 前往地点',
+            button_remote: '加入 Zoom 会议',
+            button_info: '查看会议详情',
+            
+            upcoming_button_in_person: '下一次现场会议',
+            upcoming_button_remote: '下一次远程会议',
+            details_upcoming_in_person_text: '下一次会议 (双周) 将是**现场**。点击下方按钮查看地图指引:',
+            details_upcoming_remote_text: '下一次会议 (单周) 将是 **远程** (Zoom)。点击下方按钮加入会议:',
+            details_link_button: '获取地图指引',
+            details_link_button_remote: '加入 Zoom 会议',
+            
+            timezone_info: '参考时间: 周四 12:30 (当地时间)',
+            in_person_label: '现场',
+            remote_label: '远程',
+        },
+        'hi': { 
+            flag: '🇮🇳', name: 'हिन्दी (Hindi)', 
+            title: 'अल्बा क्यूबसैट मीटिंग',
+            subtitle: 'संरचनाएं और तंत्र उपप्रणाली',
+            live: 'मीटिंग अभी लाइव है!',
+            upcoming: 'जल्द ही अगली मीटिंग',
+            none: 'कोई मीटिंग निर्धारित नहीं है',
+            details_live_in_person: 'मोड: व्यक्तिगत रूप से (जारी)',
+            details_live_remote: 'मोड: दूरस्थ (Zoom - जारी)',
+            button_in_person: 'स्थान पर जाएं / मैप्स खोलें',
+            button_remote: 'Zoom कॉल में शामिल हों',
+            button_info: 'मीटिंग विवरण देखें',
+            
+            upcoming_button_in_person: 'अगली व्यक्तिगत मीटिंग',
+            upcoming_button_remote: 'अगली दूरस्थ मीटिंग',
+            details_upcoming_in_person_text: 'अगली मीटिंग (सम सप्ताह) **व्यक्तिगत रूप से** होगी। मैप्स पर दिशा-निर्देश के लिए नीचे दिए गए बटन पर क्लिक करें:',
+            details_upcoming_remote_text: 'अगली मीटिंग (विषम सप्ताह) Zoom पर **दूरस्थ** होगी। कॉल में शामिल होने के लिए नीचे दिए गए बटन पर क्लिक करें:',
+            details_link_button: 'मैप्स दिशा-निर्देश प्राप्त करें',
+            details_link_button_remote: 'Zoom कॉल में शामिल हों',
+            
+            timezone_info: 'संदर्भ समय: गुरुवार 12:30 बजे (स्थानीय समय)',
+            in_person_label: 'व्यक्तिगत रूप से',
+            remote_label: 'दूरस्थ',
+        },
+    };
+
+    let currentLanguage = 'it'; 
+    const availableLangs = Object.keys(LANGUAGES);
+    
+    let iconElement, statusMessage, timeDetails, buttonElement, 
+        detailsContainer, detailsText, detailsLinkButton, detailsIcon;
+
+    function determineInitialLanguage() {
+        const savedLang = localStorage.getItem('alba_cubesat_lang');
+        if (savedLang && availableLangs.includes(savedLang)) {
+            return savedLang;
+        }
+
+        const browserLang = navigator.language.split('-')[0];
+        if (availableLangs.includes(browserLang)) {
+            return browserLang;
+        }
+
+        return 'it';
+    }
+
+    function getMeetingMode(date) {
+        const t = new Date(date.valueOf());
+        const dayn = (date.getDay() + 6) % 7;
+        t.setDate(t.getDate() - dayn + 3);
+        const firstThursday = t.valueOf();
+        t.setMonth(0, 1);
+        if (t.getDay() !== 4) {
+            t.setMonth(0, 1 + ((4 - t.getDay()) + 7) % 7);
+        }
+        const weekNumber = 1 + Math.ceil((firstThursday - t) / 604800000); 
+        
+        const isEvenWeek = weekNumber % 2 === 0;
+
+        const mode = isEvenWeek ? 'IN_PERSON' : 'REMOTE';
+        const langData = LANGUAGES[currentLanguage];
+        
+        return {
+            mode: mode,
+            link: mode === 'IN_PERSON' ? IN_PERSON_LINK : REMOTE_LINK,
+            label: isEvenWeek ? langData.in_person_label : langData.remote_label,
+            week: weekNumber,
+        };
+    }
+
+    function translateUI(langCode) {
+        const langData = LANGUAGES[langCode];
+
+        document.getElementById('main-title').textContent = langData.title;
+        document.getElementById('subtitle').textContent = langData.subtitle;
+        document.getElementById('timezone-info').textContent = langData.timezone_info;
+        
+        document.getElementById('current-flag').textContent = langData.flag; 
+        
+        localStorage.setItem('alba_cubesat_lang', langCode);
+        currentLanguage = langCode;
+
+        updateStatus();
+    }
+
+    function getNextMeetingTimeLocal() {
+        const now = new Date();
+        const meetingDay = MEETING_DAY; 
+        
+        let daysToAdd = (meetingDay - now.getDay() + 7) % 7;
+        
+        const nextMeeting = new Date(now);
+        nextMeeting.setDate(now.getDate() + daysToAdd);
+        
+        nextMeeting.setHours(MEETING_HOUR, MEETING_MINUTE, 0, 0);
+
+        const meetingEnd = new Date(nextMeeting.getTime() + 60 * 60 * 1000); 
+
+        if (daysToAdd === 0 && now.getTime() >= meetingEnd.getTime()) {
+             nextMeeting.setDate(nextMeeting.getDate() + 7); 
+        } else if (daysToAdd !== 0 && now.getTime() >= nextMeeting.getTime()) {
+             if (now.getDay() === meetingDay && now.getHours() > MEETING_HOUR) {
+                nextMeeting.setDate(nextMeeting.getDate() + 7); 
+             }
+        }
+
+        return nextMeeting; 
+    }
+
+    function updateStatus() {
+        const langData = LANGUAGES[currentLanguage];
+        const nextMeetingTimeLocal = getNextMeetingTimeLocal(); 
+        const now = new Date();
+        
+        const meetingMode = getMeetingMode(nextMeetingTimeLocal); 
+        
+        const ONE_MINUTE_MS = 60000;
+        const MEETING_DURATION_MS = 60 * ONE_MINUTE_MS; 
+        const PRE_MEETING_BUFFER_MS = 15 * ONE_MINUTE_MS; 
+
+        buttonElement.className = 'dynamic-btn-base w-full text-white font-extrabold py-3 px-6 rounded-xl transition duration-300 shadow-xl transform hover:scale-[1.03] text-lg';
+        buttonElement.classList.remove('is-in-person-border'); 
+        
+        const timeUntilNextMeeting = nextMeetingTimeLocal.getTime() - now.getTime();
+        
+        const localizedTime = nextMeetingTimeLocal.toLocaleTimeString(currentLanguage, {
+            weekday: 'long', day: 'numeric', month: 'long',
+            hour: '2-digit', minute: '2-digit', 
+        });
+
+        const iconColorClass = meetingMode.mode === 'IN_PERSON' ? 'text-green-500' : 'text-blue-500';
+        const iconFillColor = meetingMode.mode === 'IN_PERSON' ? '#10b981' : '#3b82f6';
+        const buttonClass = meetingMode.mode === 'IN_PERSON' ? 'in-person-btn' : 'remote-btn';
+        const liveButtonText = meetingMode.mode === 'IN_PERSON' ? langData.button_in_person : langData.button_remote;
+        const buttonLink = meetingMode.link;
+
+        statusMessage.classList.remove('text-4xl', 'text-2xl', 'text-green-500', 'text-blue-500', 'text-red-500');
+
+        if (timeUntilNextMeeting <= PRE_MEETING_BUFFER_MS && timeUntilNextMeeting > -MEETING_DURATION_MS) {
+            
+            statusMessage.textContent = langData.live;
+            statusMessage.classList.add('text-4xl'); 
+            
+            iconElement.innerHTML = `<svg class="w-8 h-8 ${iconColorClass} mx-auto" fill="${iconFillColor}" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+
+            if (meetingMode.mode === 'IN_PERSON') {
+                statusMessage.classList.add('text-green-500');
+                timeDetails.innerHTML = langData.details_live_in_person;
+                buttonElement.classList.add('is-in-person-border'); 
+            } else { 
+                statusMessage.classList.add('text-blue-500');
+                timeDetails.innerHTML = langData.details_live_remote;
+            }
+            
+            buttonElement.textContent = liveButtonText;
+            buttonElement.classList.add(buttonClass);
+            buttonElement.onclick = () => { window.location.href = buttonLink; };
+
+            detailsContainer.classList.add('hidden');
+
+            
+        } else if (timeUntilNextMeeting > PRE_MEETING_BUFFER_MS) {
+            
+            statusMessage.textContent = langData.upcoming;
+            statusMessage.classList.add('text-2xl'); 
+            statusMessage.classList.add('text-gray-800');
+            
+            detailsLinkButton.classList.remove('is-in-person-border');
+
+            const modeClass = meetingMode.mode === 'IN_PERSON' ? 'mode-badge-in-person' : 'mode-badge-remote';
+
+            const iconSvg = meetingMode.mode === 'IN_PERSON' 
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-1 lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' 
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-1 lucide lucide-video"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>'; 
+
+
+            timeDetails.innerHTML = `
+                <div class="mode-badge ${modeClass} mx-auto mb-2">
+                    ${iconSvg}
+                    ${meetingMode.label}
+                </div>
+                <div class="font-semibold text-gray-700">
+                    Prossima: <strong class="text-gray-900">${localizedTime}</strong>
+                </div>
+            `;
+
+
+            iconElement.innerHTML = `<svg class="w-8 h-8 text-gray-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            
+            const mainUpcomingButtonText = meetingMode.mode === 'IN_PERSON' 
+                ? langData.upcoming_button_in_person 
+                : langData.upcoming_button_remote;
+            
+            buttonElement.textContent = mainUpcomingButtonText;
+            buttonElement.classList.add(buttonClass);
+            
+            buttonElement.classList.remove('text-white'); 
+            buttonElement.classList.add('toggler-btn'); 
+            buttonElement.classList.remove('shadow-xl', 'hover:scale-[1.03]'); 
+            
+            
+            buttonElement.onclick = () => {
+                detailsContainer.classList.toggle('hidden');
+            };
+
+            const detailParagraphText = meetingMode.mode === 'IN_PERSON' 
+                ? langData.details_upcoming_in_person_text
+                : langData.details_upcoming_remote_text;
+            
+            detailsText.innerHTML = detailParagraphText; 
+            detailsLinkButton.href = buttonLink;
+            
+            const innerButtonText = meetingMode.mode === 'IN_PERSON' 
+                ? langData.details_link_button
+                : langData.details_link_button_remote;
+            
+            detailsLinkButton.textContent = innerButtonText;
+            detailsLinkButton.classList.remove('in-person-btn', 'remote-btn', 'info-btn');
+            detailsLinkButton.classList.add(buttonClass); 
+
+            if (meetingMode.mode === 'IN_PERSON') {
+                 detailsLinkButton.classList.add('is-in-person-border');
+            }
+
+            detailsIcon.innerHTML = meetingMode.mode === 'IN_PERSON'
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.244-4.243a8 8 0 1111.313 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>` 
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>`; 
+
+            
+        } else {
+            
+            statusMessage.textContent = langData.none;
+            statusMessage.classList.add('text-4xl'); 
+            statusMessage.classList.add('text-red-500');
+            timeDetails.textContent = langData.timezone_info.replace('Orario di riferimento:', 'Nessuna attività live. Prossimo appuntamento:');
+
+            iconElement.innerHTML = '<svg class="w-8 h-8 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>';
+            
+            buttonElement.textContent = langData.button_info;
+            buttonElement.classList.add('info-btn');
+            buttonElement.onclick = () => { };
+            
+            detailsContainer.classList.add('hidden');
+        }
+    }
+
+    function setupLanguageSelector() {
+        const menu = document.getElementById('language-selector-menu');
+        const toggleButton = document.getElementById('language-toggle-button');
+
+        availableLangs.forEach(langCode => {
+            const langData = LANGUAGES[langCode];
+            const option = document.createElement('div');
+            option.className = 'lang-option';
+            option.innerHTML = `<span role="img" aria-label="Flag ${langData.name}">${langData.flag}</span> ${langData.name}`; 
+            option.setAttribute('data-lang', langCode);
+            
+            option.addEventListener('click', () => {
+                translateUI(langCode);
+                menu.style.display = 'none';
+            });
+            menu.appendChild(option);
+        });
+
+        toggleButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!toggleButton.contains(event.target) && !menu.contains(event.target)) {
+                menu.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        iconElement = document.getElementById('status-icon');
+        statusMessage = document.getElementById('status-message');
+        timeDetails = document.getElementById('time-details');
+        buttonElement = document.getElementById('dynamic-button');
+        detailsContainer = document.getElementById('upcoming-details');
+        detailsText = document.getElementById('details-text');
+        detailsLinkButton = document.getElementById('details-link-button');
+        detailsIcon = document.getElementById('details-icon'); 
+        
+        if (!iconElement || !statusMessage || !timeDetails || !buttonElement || !detailsContainer || !detailsText || !detailsLinkButton || !detailsIcon) {
+             console.error("Errore DOM: Impossibile trovare uno o più elementi principali o del dropdown durante l'inizializzazione.");
+             return; 
+        }
+
+        const initialLang = determineInitialLanguage();
+        translateUI(initialLang); 
+        
+        setupLanguageSelector();
+
+        updateStatus(); 
+        
+        setInterval(updateStatus, 60000); 
+    });
+</script>
+
+</body>
+</html>

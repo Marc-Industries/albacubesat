@@ -215,17 +215,19 @@
 </div>
 
 <script>
-    const MEETING_DAY = 4; 
-    const MEETING_HOUR = 12; 
+    const MEETING_DAY = 4; // Giovedì
+    const MEETING_HOUR = 12; // 12:30
     const MEETING_MINUTE = 30;
 
     // VARIABILE AGGIUNTA: Forza la modalità del meeting per eccezioni manuali o test.
-    // Impostata a 'REMOTE' come richiesto dall'utente.
+    // Impostata a 'REMOTE' per l'incontro di oggi, come richiesto.
     // Valori possibili: 'REMOTE', 'IN_PERSON', o null (per usare la logica Pari/Dispari)
     const FORCE_MEETING_MODE = 'REMOTE'; 
 
-    const IN_PERSON_LINK = "https://maps.app.goo.gl/random-alba-location-for-test";
-    const REMOTE_LINK = "https://zoom.us/tbd-alba-cubesat-sm"; 
+    // --- LINK AGGIORNATI ---
+    const IN_PERSON_LINK = "https://maps.app.goo.gl/SHT3qj7GzwD59yPw8";
+    const REMOTE_LINK = "https://us04web.zoom.us/j/7296454867?pwd=6UbAeSPBIomzXeaec0jgTkPcgS0FVz.1"; 
+    // Ho incluso l'ID e la password nella stringa URL di Zoom per un accesso diretto (usando il formato fornito).
 
     const LANGUAGES = {
         'it': {
